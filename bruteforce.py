@@ -57,10 +57,13 @@ def force_brute(budget, actions, actions_selection = []):
         return sum([i["benifice"] for i in actions_selection]),[i for i in actions_selection] 
 
 def affichage(force_brute):
+    prix = []
     for i in (force_brute[1]):
-        print("Vous devez acheté l'" + " " + i["Action"] + " " + "de la valeur" + str(i["prix"]) 
-        + " " + "euro et qui degage un benifice de" + " " + str(i["benifice"] ) + " " + "euro")
-    print("Pour une marge total de" + " " + str(force_brute[0]) + " " + "euro")
+        prix.append(i["prix"])
+        print("Vous devez acheté l'" + " " + i["Action"] + " " + "d'une valeur de" + " " + str(i["prix"])
+        + " " + "euro et qui degage un benifice de" + " " + str(round(i["benifice"], 2)) + " " + "euro")
+    print(" * Vous avez achete des actions pour la somme total de" + " " + str(sum(prix))+ " " + "euro")
+    print(" * Vous avez une marge total de" + " " + str(round(force_brute[0], 2)) + " " + "euro")
 
 if __name__ == "__main__":
 

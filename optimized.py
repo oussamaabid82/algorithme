@@ -1,3 +1,4 @@
+
 BUDGET = 500
 ACTIONS = [
 {"Action": "Action-1", "prix":20, "taux": 0.05},
@@ -22,14 +23,6 @@ ACTIONS = [
 {"Action": "Action-20","prix":114, "taux": 0.18}
 ]
 
-
-def liste_des_prix(actions):
-    liste_des_prix = []
-    for i in range(len(actions)):
-        prix = actions[i]["prix"]
-        liste_des_prix.append(prix)
-    return liste_des_prix 
-
 def calcule_benifice(actions):
     liste_des_benifices = []    
     for i in range(len(actions)):       
@@ -39,36 +32,43 @@ def calcule_benifice(actions):
 
 def ajout_benifice_dict(actions, benifices):
     for i, benifice in zip(range(len(benifices)), benifices):
-        act = actions[i]
-        act["benifice"] = benifice
+        action = actions[i]
+        action["benifice"] = benifice
 
-def force_brute(budget, actions, actions_selection = []):
-    if actions:
-        val1, lstVal1 = force_brute(budget, actions[1:], actions_selection)
-        val = actions[0]
-        
-        if val["prix"] <= budget:
-            val2, lstVal2 = force_brute(budget - val["prix"], actions[1:], actions_selection + [val])
-            if val1 < val2:
-                return val2, lstVal2
 
-        return val1, lstVal1
-    else:
-        return sum([i["benifice"] for i in actions_selection]),[i for i in actions_selection] 
+def force_brut(budget, actions):
+    liste_model = [[0 for x in range(budget + 1)] for x in range(len(actions) + 1)]
+    for i in range(1, len(actions) + 1):
+        for j in range(1, budget + 1):
+            if actions[i-1]["prix"] <= j:
+                liste_model[i][j] = max(actions[i-1]["benifice"] + liste_model[i-1][j-actions[i-1]["prix"]], liste_model[i-1][j])
+            else:
+                liste_model[i][j] = liste_model[i-1][j]
+	
+    # Retrouver les éléments en fonction de la somme
+    n = len(actions)
+    actions_selection = []
+
+    while budget >= 0 and n >= 0:
+        action = actions[n-1]
+        if liste_model[n][budget] == liste_model[n-1][budget-action["prix"]] + action["benifice"]:
+            actions_selection.append(action)
+            budget -= action["prix"]
+        n -= 1
+
+    return liste_model[-1][-1], actions_selection
 
 def affichage(force_brute):
+    prix = []
     for i in (force_brute[1]):
-        print("Vous devez acheté l'" + " " + i["Action"] + " " + "de la valeur" + str(i["prix"]) 
-        + " " + "euro et qui degage un benifice de" + " " + str(i["benifice"] ) + " " + "euro")
-    print("Pour une marge total de" + " " + str(force_brute[0]) + " " + "euro")
+        prix.append(i["prix"])
+        print("Vous devez acheté l'" + " " + i["Action"] + " " + "d'une valeur de" + " " + str(i["prix"])
+        + " " + "euro et qui degage un benifice de" + " " + str(round(i["benifice"], 2)) + " " + "euro")
+    print(" * Vous avez achete des actions pour la somme total de" + " " + str(sum(prix))+ " " + "euro")
+    print(" * Vous avez une marge total de" + " " + str(round(force_brute[0], 2)) + " " + "euro")
 
 if __name__ == "__main__":
-
-    LISTES_DES_PRIX_PAR_ACTION = liste_des_prix(ACTIONS)
     LISTE_DES_MARGES_PAR_ACTION = calcule_benifice(ACTIONS)
-    ajout_benifice_dict(ACTIONS, LISTE_DES_MARGES_PAR_ACTION)
-    force_brute = force_brute(BUDGET, ACTIONS)
-    affichage(force_brute)
-
-
-
+    ajout_benifice_dict(ACTIONS, LISTE_DES_MARGES_PAR_ACTION)	
+    force = force_brut(BUDGET, ACTIONS)
+    affichage(force)

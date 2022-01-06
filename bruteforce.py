@@ -62,12 +62,8 @@ def affichage(force_brute):
         + " " + "euro et qui degage un benifice de" + " " + str(i["benifice"] ) + " " + "euro")
 
 if __name__ == "__main__":
-
-    LISTES_DES_PRIX_PAR_ACTION = liste_des_prix(ACTIONS)
-    LISTE_DES_MARGES_PAR_ACTION = calcule_benifice(ACTIONS)
-    ajout_benifice_dict(ACTIONS, LISTE_DES_MARGES_PAR_ACTION)
+    list_price_per_action = liste_des_prix(ACTIONS)
+    list_profit_per_action = calcule_benifice(ACTIONS)
+    ajout_benifice_dict(ACTIONS, list_profit_per_action)
     force_brute = force_brute(BUDGET, ACTIONS)
     affichage(force_brute)
-
-
-
